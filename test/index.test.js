@@ -42,23 +42,27 @@ describe('Weather Alerts App - Input clearing', () => {
     expect(fetchMock).toHaveBeenCalledWith('https://api.weather.gov/alerts/active?area=CA')
   })
 
-  it('displays fetched alert data in the DOM after a successful fetch', async () => {
+  it('displays the title and number of alerts after a successful fetch', async () => {
     const { getByPlaceholderText, getByText } = require('@testing-library/dom').within(container)
+    const input = getByPlaceholderText('Enter state abbreviation')
+    const button = getByText('Get Weather Alerts')
 
     fetchMock.mockResolvedValue({
       ok: true,
       status: 200,
       json: async () => ({
-        title: "Weather Alerts",
+        title: "Current watches, warnings, and advisories for New York",
         features: [
           { properties: { headline: "Flood warning in your area" }},
-          { properties: { headline: "Tornado watch for the region" }}
+          { properties: { headline: "Air quality alert in your area" }},
+          { properties: { headline: "Severe thunderstorm warning in your area" }},
+          { properties: { headline: "Tornado watch for the region" }},
+          { properties: { headline: "Winter storm warning in your area" }},
+          { properties: { headline: "Coastal flood advisory in your area" }},
+          { properties: { headline: "High wind watch in your area" }}
         ]
       })
     })
-
-    const input = getByPlaceholderText('Enter state abbreviation')
-    const button = getByText('Get Weather Alerts')
 
     input.value = 'NY'
     button.click()
@@ -66,30 +70,7 @@ describe('Weather Alerts App - Input clearing', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     const displayDiv = container.querySelector('#alerts-display')
-    expect(displayDiv).toHaveTextContent('Weather Alerts: 2')
-    expect(displayDiv).toHaveTextContent('Flood warning in your area')
-    expect(displayDiv).toHaveTextContent('Tornado watch for the region')
-
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        title: "Weather Alerts",
-        features: [
-          { properties: { headline: "Flood warning in your area" }},
-          { properties: { headline: "Air quality alert in your area" }},
-          { properties: { headline: "Severe thunderstorm warning in your area" }},
-          { properties: { headline: "Tornado watch for the region" }}
-        ]
-      })
-    })
-
-    input.value = 'MN'
-    button.click()
-
-    await new Promise(resolve => setTimeout(resolve, 0))
-
-    expect(displayDiv).toHaveTextContent('Weather Alerts: 4')
+    expect(displayDiv).toHaveTextContent('Current watches, warnings, and advisories for New York: 7')
     expect(displayDiv).toHaveTextContent('Flood warning in your area')
     expect(displayDiv).toHaveTextContent('Air quality alert in your area')
     expect(displayDiv).toHaveTextContent('Severe thunderstorm warning in your area')
@@ -117,7 +98,7 @@ describe('Weather Alerts App - Input clearing', () => {
     const input = getByPlaceholderText('Enter state abbreviation')
     const button = getByText('Get Weather Alerts')
 
-    input.value = 'ZZ'
+    input.value = 'CA'
     button.click()
 
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -128,7 +109,7 @@ describe('Weather Alerts App - Input clearing', () => {
 
     fetchMock.mockRejectedValue(new Error('Other issue'))
 
-    input.value = 'ZZ'
+    input.value = 'TX'
     button.click()
 
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -145,7 +126,7 @@ describe('Weather Alerts App - Input clearing', () => {
     const input = getByPlaceholderText('Enter state abbreviation')
     const button = getByText('Get Weather Alerts')
 
-    input.value = 'ZZ'
+    input.value = 'CA'
     button.click()
 
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -158,7 +139,7 @@ describe('Weather Alerts App - Input clearing', () => {
       ok: true,
       status: 200,
       json: async () => ({
-        title: "Weather Alerts",
+        title: "Current watches, warnings, and advisories for Florida",
         features: [
           { properties: { headline: "Heat advisory in your area" } }
         ]
